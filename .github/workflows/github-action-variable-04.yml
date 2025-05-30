@@ -1,18 +1,29 @@
 ### github-action-variable-04.yml
 
 name: Test Github Actions variable-04
+run-name: Run Github Actions inputs, outputs, needs
 on:
   workflow_dispatch:
     inputs:
       name:
-        description: '이름'
+        description: '이름-영소문자'
         required: true
-        default: 'INPUT'
+        default: 'input'
         
 
 jobs:
-  inputs_data:
+  input_data:
     runs-on: ubuntu-latest
+    outputs:
+    	upper_name: ${{ steps.uppercase.outputs.result }}
     steps:
       - name: Print input data
-	      run: echo "Hello, ${{ inputs.name }}"
+      	id: uppercase
+	run: echo "result=$(echo '${{ github.event.inputs.name }}') | tr 'a-z' 'A-Z'" >> $GITHUB_OUTPUT
+
+  output_data:
+    needs: input-data
+    runs-on: ubuntu-latest
+      steps:
+        - name: Print output data
+      	  run: echo "Hello, ${{ needs.input-data.outputs.upper_name }}"
